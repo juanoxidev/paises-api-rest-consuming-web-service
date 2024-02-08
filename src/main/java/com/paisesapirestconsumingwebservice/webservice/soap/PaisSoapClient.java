@@ -1,4 +1,4 @@
-package webservice.soap;
+package com.paisesapirestconsumingwebservice.webservice.soap;
 
 
 
