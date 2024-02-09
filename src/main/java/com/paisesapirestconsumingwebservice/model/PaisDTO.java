@@ -15,6 +15,7 @@ public class PaisDTO {
 	private String capital;
 	private Moneda moneda;
 	private int poblacion;
+	private String bandera;
 	private Map<String, String> lenguajes;
 	private Map<String, String> mapas;
 }

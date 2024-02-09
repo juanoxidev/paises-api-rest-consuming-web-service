@@ -6,16 +6,21 @@ import com.paisesapirestconsumingwebservice.model.apiresponse.CountryData;
 
 @Service
 public class PaisRestService {
-	private static final String API_URL = "https://restcountries.com/v3.1/name/{pais}?fields=languages,maps";
-	private final WebClient webClient;
-	
-	public PaisRestService(WebClient.Builder webClientBuilder) {
-		this.webClient = webClientBuilder.baseUrl(API_URL).build();
-	}
+	private static final String API_URL= "https://restcountries.com/v3.1/name/{pais}?fields=languages,maps";
+    private final WebClient webClient;
+
+    public PaisRestService (WebClient.Builder webClientBuilder) {
+        this.webClient = webClientBuilder.baseUrl(API_URL).build();
+    }
 	
 	//peticion a la api y parseo a clase countryData
-	public CountryData obtenerPaisInfoApi (String pais) {
-		return webClient.get().uri(API_URL,pais).accept(MediaType.APPLICATION_JSON)
-				.retrieve().bodyToFlux(CountryData.class).blockLast();
-	}
+    public CountryData obtenerPaisInfoApi(String pais) {
+        return webClient
+                .get()
+                .uri(API_URL, pais)
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .bodyToFlux(CountryData.class)
+                .blockLast();
+    }
 }

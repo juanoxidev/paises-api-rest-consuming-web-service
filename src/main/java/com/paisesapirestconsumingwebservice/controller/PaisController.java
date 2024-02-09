@@ -1,35 +1,79 @@
 package com.paisesapirestconsumingwebservice.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.paisesapirestconsumingwebservice.model.PaisDTO;
+import com.paisesapirestconsumingwebservice.model.apiresponse.CountryData;
+import com.paisesapirestconsumingwebservice.webservice.apirest.PaisRestService;
 import com.paisesapirestconsumingwebservice.webservice.soap.PaisSoapClient;
 
 import localhost.ws.ObtenerPaisResponse;
-import localhost.ws.Pais;
 
 @RestController
 public class PaisController {
 
 	private final PaisSoapClient paisSoapClient;
+	private final PaisRestService paisRestService;
+	private static final Logger log = LoggerFactory.getLogger(PaisController.class);
 	
 	@Autowired
-	public PaisController (PaisSoapClient paisSoapClient) {
+	public PaisController (PaisSoapClient paisSoapClient, PaisRestService paisRestService) {
 	 this.paisSoapClient = paisSoapClient;	
+	 this.paisRestService = paisRestService;
 	}
 	
 	
 	@GetMapping("/obtenerPais")
-	public Pais obtenerPais(@RequestParam String nombre) {
-	ObtenerPaisResponse response = paisSoapClient.obtenerPais(nombre);
-	Pais pais = new Pais();
-	pais.setNombre(response.getPais().getNombre());
-	pais.setCapital(response.getPais().getCapital());
-	pais.setMoneda(response.getPais().getMoneda());
-	pais.setPoblacion(response.getPais().getPoblacion());
-	pais.setBandera(response.getPais().getBandera());
-	return pais;
+	public PaisDTO obtenerPais(@RequestParam String nombre) {
+		ObtenerPaisResponse soapResponse = obtenerDatosSOAP(nombre);
+		CountryData obtenerDatosAPI = obtenerDatosAPI(nombre);
+		return construirPaisDTO(soapResponse, obtenerDatosAPI);
+	}
+	
+	private ObtenerPaisResponse obtenerDatosSOAP(String nombre) {
+		try {
+			return paisSoapClient.obtenerPais(nombre);
+		}catch (Exception e){
+			log.error("No se obtuvo info del SOAP", e);
+			return null;
+		}
+	}
+	
+	private CountryData obtenerDatosAPI(String nombre) {
+		try {
+			return paisRestService.obtenerPaisInfoApi(nombre);
+		}catch (Exception e){
+			log.error("No se obtuvo info de la API", e);
+			return null;
+		}
+	}
+	
+	private PaisDTO construirPaisDTO(ObtenerPaisResponse soapResponse, CountryData apiResponse) {
+		PaisDTO paisDTO = new PaisDTO();
+		
+		if (soapResponse != null) {
+			paisDTO.setNombre(soapResponse.getPais().getNombre());
+			paisDTO.setCapital(soapResponse.getPais().getCapital());
+			paisDTO.setMoneda(soapResponse.getPais().getMoneda());
+			paisDTO.setPoblacion(soapResponse.getPais().getPoblacion());
+			paisDTO.setBandera(soapResponse.getPais().getBandera());
+			
+		} else {
+			log.error("La respuesta del SOAP es nula");
+		}
+		
+		if (apiResponse != null) {
+			paisDTO.setLenguajes(apiResponse.getLanguages());
+			paisDTO.setMapas(apiResponse.getMaps());
+		} else {
+			log.error("La respuesta de la API es nula");
+		}
+		
+		return paisDTO;
 	}
 }
