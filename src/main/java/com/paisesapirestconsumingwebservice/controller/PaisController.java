@@ -57,8 +57,8 @@ public class PaisController {
 	
 	 private PaisDTO construirPaisDTO(ObtenerPaisResponse soapResponse, CountryData apiResponse){
 	        PaisDTO.PaisDTOBuilder builder = PaisDTO.builder();
-
-	        if (soapResponse != null) {
+	        
+	        if (soapResponse != null && soapResponse.getPais() != null) {
 	            builder.nombre(soapResponse.getPais().getNombre())
 	                    .capital(soapResponse.getPais().getCapital())
 	                    .moneda(soapResponse.getPais().getMoneda())
