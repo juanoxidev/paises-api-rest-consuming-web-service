@@ -14,13 +14,14 @@ import localhost.ws.ObtenerPaisResponse;
 public class PaisSoapClient extends WebServiceGatewaySupport{
 
 	private static final Logger log = LoggerFactory.getLogger(PaisSoapClient.class);
-	private static final String baseUrl = "http://localhost:8081/ws";
+	private static final String baseUrl = "https://soap-paises.onrender.com/ws";
 	
 	public ObtenerPaisResponse obtenerPais (String pais) {
 		ObtenerPaisRequest request = new ObtenerPaisRequest();
 		request.setName(pais);
 		log.info("Obteniendo info del pais : " + pais);
-		ObtenerPaisResponse response = (ObtenerPaisResponse) getWebServiceTemplate().marshalSendAndReceive(baseUrl+"/paises", request, new SoapActionCallback(baseUrl+"/ObtenerPaisRequest"));
+		ObtenerPaisResponse response = (ObtenerPaisResponse) getWebServiceTemplate()
+				.marshalSendAndReceive(baseUrl+"/paises", request, new SoapActionCallback(baseUrl+"/ObtenerPaisRequest"));
 		return response;
 		
 		

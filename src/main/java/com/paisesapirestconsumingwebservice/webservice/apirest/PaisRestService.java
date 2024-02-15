@@ -18,6 +18,7 @@ public class PaisRestService {
         return webClient
                 .get()
                 .uri(API_URL, pais)
+                // ponemos el formato en el q nos responde la api
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
                 .bodyToFlux(CountryData.class)
